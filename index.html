@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Regression Snakes & Ladders</title>
+<style>
+  body { font-family: Arial; text-align: center; background: #f5f5f5; }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(10, 50px);
+    gap: 2px;
+    justify-content: center;
+    margin: 20px;
+  }
+  .cell {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    position: relative;
+  }
+  .player { color: red; font-size: 18px; }
+  button { padding: 10px; margin: 10px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<h1>📊 Regression Snakes & Ladders</h1>
+
+<button onclick="rollDice()">Roll Dice</button>
+<p id="status">Click roll to start</p>
+
+<div class="board" id="board"></div>
+
+<script>
+let position = 1;
+
+const snakes = {16:6, 47:26, 49:11, 56:53, 62:19, 87:24, 93:73, 95:75, 98:78};
+const ladders = {1:38, 4:14, 9:31, 21:42, 28:84, 36:44, 51:67, 71:91, 80:100};
+
+const quiz = {
+  5: {
+    q: "What does R² mean?",
+    a: "variance"
+  },
+  12: {
+    q: "Negative coefficient means?",
+    a: "decrease"
+  },
+  25: {
+    q: "What is multicollinearity?",
+    a: "correlated"
+  }
+};
+
+function createBoard() {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  for (let i = 100; i >= 1; i--) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.id = "cell-" + i;
+    cell.innerHTML = i;
+
+    if (i === position) {
+      cell.innerHTML += "<div class='player'>🎓</div>";
+    }
+
+    board.appendChild(cell);
+  }
+}
+
+function rollDice() {
+  let roll = Math.floor(Math.random() * 6) + 1;
+  let next = position + roll;
+
+  if (next > 100) {
+    document.getElementById("status").innerText = "Need exact roll!";
+    return;
+  }
+
+  position = next;
+
+  // Quiz check
+  if (quiz[position]) {
+    let answer = prompt(quiz[position].q);
+    if (answer && answer.toLowerCase().includes(quiz[position].a)) {
+      alert("Correct!");
+    } else {
+      alert("Wrong! Move back 3 spaces.");
+      position = Math.max(1, position - 3);
+    }
+  }
+
+  // Ladder
+  if (ladders[position]) {
+    alert("Ladder! Climb up!");
+    position = ladders[position];
+  }
+
+  // Snake
+  if (snakes[position]) {
+    alert("Snake! Slide down!");
+    position = snakes[position];
+  }
+
+  if (position === 100) {
+    alert("🎉 You win! Regression master!");
+  }
+
+  document.getElementById("status").innerText =
+    "Rolled " + roll + " → Now at " + position;
+
+  createBoard();
+}
+
+createBoard();
+</script>
+
+</body>
+</html>
